@@ -77,7 +77,7 @@ namespace SeaBattle
 
             int.TryParse(input, out number);
 
-            if (IsValidCordinate(number - 1)) return number - 1;
+            if (IsValidCordinate(number)) return number;
 
             ThrowWrongInputException();
 
@@ -134,11 +134,14 @@ namespace SeaBattle
         }
         static void DrawField(Cell[,] field)
         {
+            Console.WriteLine(" 0123456789");
             for (int i = 0; i < fieldSide; i++)
             {
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write(i);
+
                 for (int j = 0; j < fieldSide; j++)
                 {
-
                     ConsoleColor color = field[i, j].Character switch
                     {
                         Cell.destroyedChar => ConsoleColor.Red,

@@ -10,9 +10,9 @@ namespace SeaBattle
 
         public bool IsBombed { get; private set; } = false;
 
-        private const char shipChar = '$';
-        private const char destroyedChar = 'o';
-        private const char destroyedShipChar = 'X';
+        public const char shipChar = '$';
+        public const char destroyedChar = 'o';
+        public const char destroyedShipChar = 'X';
 
         public Cell(char character)
         {
@@ -33,6 +33,8 @@ namespace SeaBattle
                 IsShip = false;
             }
             else Character = destroyedChar;
+
+            IsBombed = true;
         }
         public void RevealShip() // This method is for player visible cells ONLY
         {

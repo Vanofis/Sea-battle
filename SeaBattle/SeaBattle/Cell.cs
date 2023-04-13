@@ -1,8 +1,7 @@
-﻿using System;
-
+﻿
 namespace SeaBattle
 {
-    class Cell
+    public class Cell
     {
         public char Character { get; private set; } = ' ';
 

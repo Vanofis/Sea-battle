@@ -40,14 +40,14 @@ namespace SeaBattle
         {
             if (IsAI)
             {
-                AIShoot();
+                AIInput();
             }
             else
             {
                 HumanInput();
-
-                HumanShoot();
             }
+
+            Shoot();
         }
         public void AddScore()
         {
@@ -101,22 +101,6 @@ namespace SeaBattle
         {
             Console.WriteLine("Wrong input you dumb fuck");
         }
-        private void HumanShoot()
-        {
-            if (lastShootCords.Item1 is null || lastShootCords.Item2 is null) return;
-
-            int x = (int)lastShootCords.Item1;
-            int y = (int)lastShootCords.Item2;
-
-            if (enemy.Cells.field[x, y].IsBombed) return;
-
-            if (enemy.Cells.field[x, y].IsShip) VisibleCells.field[x, y].RevealShip();
-
-            IsStreak = enemy.Cells.field[x, y].IsShip;
-
-            enemy.Cells.field[x, y].DestroyCell();
-            VisibleCells.field[x, y].DestroyCell();
-        }
         #endregion
 
         #region AI
@@ -124,25 +108,27 @@ namespace SeaBattle
         {
             aiMemoryCords = (null, null);
         }
-        private void AIShoot()
+        private void AIInput()
         {
             if (!IsStreak) ShootRandomPoint();
             else GetNearPoints();
         }
         private void ShootRandomPoint()
         {
-            int x = rand.Next(0, Tools.fieldSide);
-            int y = rand.Next(0, Tools.fieldSide);
+            lastShootCords = (null, null);
 
-            while (enemy.Cells.field[x, y].IsBombed)
+            int x = 0;
+            int y = 0;
+
+            do
             {
                 x = rand.Next(0, Tools.fieldSide);
                 y = rand.Next(0, Tools.fieldSide);
-            }
+            }while (enemy.Cells.field[x, y].IsBombed);
 
             CheckIfPlayerShip(x, y);
 
-            enemy.Cells.field[x, y].DestroyCell();
+            lastShootCords = (x, y);
         }
         private void GetNearPoints()
         {
@@ -207,5 +193,26 @@ namespace SeaBattle
         }
 
         #endregion
+
+        private void Shoot()
+        {
+            if (lastShootCords.Item1 is null || lastShootCords.Item2 is null) return;
+
+            int x = (int)lastShootCords.Item1;
+            int y = (int)lastShootCords.Item2;
+
+            if (enemy.Cells.field[x, y].IsBombed) return;
+
+            if(!IsAI)
+            {
+                if (enemy.Cells.field[x, y].IsShip) VisibleCells.field[x, y].RevealShip();
+            }
+
+            IsStreak = enemy.Cells.field[x, y].IsShip;
+
+            enemy.Cells.field[x, y].DestroyCell();
+
+            if(!IsAI) VisibleCells.field[x, y].DestroyCell();
+        }
     }
 }

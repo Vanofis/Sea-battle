@@ -5,10 +5,17 @@ using System.Threading;
 
 namespace SeaBattle
 {
+    enum PlayerTurn
+    { 
+        Player1,
+        Player2,
+    }
     public class SeaBattle
     {
         private Player player1;
-        private Player player2;        
+        private Player player2;
+        private Player currentPlayer;
+        private PlayerTurn turn = PlayerTurn.Player1;
 
         private bool isGameStarted = true;
         private bool isFinishedRound = false;
@@ -42,33 +49,42 @@ namespace SeaBattle
 
             WriteScore();
 
-            do
-            {
-                player1.DoTurn();
+            PickPlayer();
 
-                Redraw();
+            DoPlayerTurn();
 
-                Thread.Sleep(1000);
+            ChangeTurn();
+
+            Redraw();
+        }
+        private void PickPlayer()
+        {
+            switch(turn)
+            { 
+                case PlayerTurn.Player1:
+                    currentPlayer = player1;
+                    break;
+                case PlayerTurn.Player2:
+                    currentPlayer = player2;
+                    break;
             }
-            while (player1.IsStreak);
-
-            if (player1.IsAI) player1.ResetMemory();
+        }
+        private void DoPlayerTurn()
+        {
+            currentPlayer.DoTurn();
 
             TryFinishGame();
-
-            do
+        }
+        private void ChangeTurn()
+        {
+            if(turn is PlayerTurn.Player1 && !player1.IsStreak)
             {
-                player2.DoTurn();
-
-                Redraw();
-
-                Thread.Sleep(1000);
+                turn = PlayerTurn.Player2;
             }
-            while(player2.IsStreak);
-
-            if (player2.IsAI) player2.ResetMemory();
-
-            TryFinishGame();
+            else if (turn is PlayerTurn.Player2 && !player2.IsStreak)
+            {
+                turn = PlayerTurn.Player1;
+            }
         }
         private void WriteScore()
         {

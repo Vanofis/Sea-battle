@@ -5,9 +5,9 @@ namespace SeaBattle
     {
         static void Main(string[] args)
         {
-            SeaBattle game = new SeaBattle();
+            Menu menu = new Menu();
 
-            game.Start();
+            menu.LaunchMenu();
         }
     }
 }

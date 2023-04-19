@@ -3,11 +3,19 @@ using System;
 
 namespace SeaBattle
 {
-    class Map
+    public class Map
     {
-        private static Random rand = new Random();
+        private Random rand = new Random();
 
-        public static void GenerateBlankField(Cell[,] field)
+        public Cell[,] field { get; private set; } = new Cell[Tools.fieldSide, Tools.fieldSide];
+
+        public void InitMap()
+        {
+            GenerateBlankField();
+
+            GenerateField();
+        }
+        public void GenerateBlankField()
         {
             for (int i = 0; i < Tools.fieldSide; i++)
             {
@@ -17,23 +25,7 @@ namespace SeaBattle
                 }
             }
         }
-        public static Cell[,] GenerateField(Cell[,] field)
-        {
-            for (int i = 0; i < 20; i++)
-            {
-                (int, int) randomPoint = new(rand.Next(0, Tools.fieldSide), rand.Next(0, Tools.fieldSide));
-
-                while (field[randomPoint.Item1, randomPoint.Item2].IsShip)
-                {
-                    randomPoint = new(rand.Next(0, Tools.fieldSide), rand.Next(0, Tools.fieldSide));
-                }
-
-                field[randomPoint.Item1, randomPoint.Item2].CreateShip();
-            }
-
-            return field;
-        }
-        public static void DrawField(Cell[,] field)
+        public void DrawField()
         {
             Console.WriteLine(" 0123456789");
             for (int i = 0; i < Tools.fieldSide; i++)
@@ -62,13 +54,21 @@ namespace SeaBattle
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("===============");
         }
-        public static void Redraw(Player player1, Player player2)
+        private Cell[,] GenerateField()
         {
-            Console.Clear();
+            for (int i = 0; i < 20; i++)
+            {
+                (int, int) randomPoint = new(rand.Next(0, Tools.fieldSide), rand.Next(0, Tools.fieldSide));
 
-            DrawField(player1.Cells);
-            DrawField(player1.VisibleCells);
+                while (field[randomPoint.Item1, randomPoint.Item2].IsShip)
+                {
+                    randomPoint = new(rand.Next(0, Tools.fieldSide), rand.Next(0, Tools.fieldSide));
+                }
+
+                field[randomPoint.Item1, randomPoint.Item2].CreateShip();
+            }
+
+            return field;
         }
-
     }
 }

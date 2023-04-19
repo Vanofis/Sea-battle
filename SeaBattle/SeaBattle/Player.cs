@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 
 namespace SeaBattle
 {
@@ -8,13 +9,16 @@ namespace SeaBattle
         //Random
         private Random rand = new Random();
 
+        //Score
+        public int Score { get; private set; } = 0;
+
         //Bools
         public bool IsAI { get; private set; } = false;
         public bool IsStreak { get; private set; } = false;
 
         //Cells
-        public Cell[,] Cells { get; private set; } = new Cell[Tools.fieldSide, Tools.fieldSide];
-        public Cell[,] VisibleCells { get; private set; } = new Cell[Tools.fieldSide, Tools.fieldSide]; 
+        public Map Cells { get; private set; } = new Map();
+        public Map VisibleCells { get; private set; } = new Map();
 
         //Enemy
         private Player enemy;
@@ -45,16 +49,32 @@ namespace SeaBattle
                 HumanShoot();
             }
         }
+        public void AddScore()
+        {
+            Score++;
+        }
+        public void ResetScore()
+        { 
+            Score = 0; 
+        }
 
         #region Human
         private void HumanInput()
         {
-            Console.WriteLine("Write your X shoot coordinates");
-            lastShootCords.Item2 = GetInput();
+            int? Y = null;
+            int? X = null;
 
-            Console.WriteLine("Write your Y shoot coordinates");
+            do
+            {
+                Console.WriteLine("Write your Y shoot coordinates");
+                Y = GetInput();
 
-            lastShootCords.Item1 = GetInput();
+                Console.WriteLine("Write your X shoot coordinates");
+                X = GetInput();
+
+            } while (enemy.Cells.field[(int)X, (int)Y].IsBombed);
+
+            lastShootCords = (X, Y);
         }
         private int? GetInput()
         {
@@ -88,14 +108,14 @@ namespace SeaBattle
             int x = (int)lastShootCords.Item1;
             int y = (int)lastShootCords.Item2;
 
-            if (enemy.Cells[x, y].IsBombed) return;
+            if (enemy.Cells.field[x, y].IsBombed) return;
 
-            if (enemy.Cells[x, y].IsShip) VisibleCells[x, y].RevealShip();
+            if (enemy.Cells.field[x, y].IsShip) VisibleCells.field[x, y].RevealShip();
 
-            IsStreak = enemy.Cells[x, y].IsShip;
+            IsStreak = enemy.Cells.field[x, y].IsShip;
 
-            enemy.Cells[x, y].DestroyCell();
-            VisibleCells[x, y].DestroyCell();
+            enemy.Cells.field[x, y].DestroyCell();
+            VisibleCells.field[x, y].DestroyCell();
         }
         #endregion
 
@@ -114,7 +134,7 @@ namespace SeaBattle
             int x = rand.Next(0, Tools.fieldSide);
             int y = rand.Next(0, Tools.fieldSide);
 
-            while (enemy.Cells[x, y].IsBombed)
+            while (enemy.Cells.field[x, y].IsBombed)
             {
                 x = rand.Next(0, Tools.fieldSide);
                 y = rand.Next(0, Tools.fieldSide);
@@ -122,7 +142,7 @@ namespace SeaBattle
 
             CheckIfPlayerShip(x, y);
 
-            enemy.Cells[x, y].DestroyCell();
+            enemy.Cells.field[x, y].DestroyCell();
         }
         private void GetNearPoints()
         {
@@ -140,7 +160,7 @@ namespace SeaBattle
 
             CheckIfPlayerShip(randomNearX, randomNearY);
 
-            enemy.Cells[randomNearX, randomNearY].DestroyCell();
+            enemy.Cells.field[randomNearX, randomNearY].DestroyCell();
         }
         private List<(int, int)> ValidatePoints((int, int)[] points)
         {
@@ -155,14 +175,14 @@ namespace SeaBattle
         }
         private void CheckIfPlayerShip(int x, int y)
         {
-            if (enemy.Cells[x, y].IsShip) MemberPosition(x, y);
+            if (enemy.Cells.field[x, y].IsShip) MemberPosition(x, y);
             else IsStreak = false;
         }
         private bool IsBombedPosition((int, int) point)
         {
             if (!Tools.IsValidPoint(point)) return true;
 
-            return enemy.Cells[point.Item1, point.Item2].IsBombed;
+            return enemy.Cells.field[point.Item1, point.Item2].IsBombed;
         }
         private void MemberPosition(int x, int y)
         {

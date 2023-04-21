@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 
 namespace SeaBattle
 {
     public class Player
     {
+        //Wins
+        public int winsCount { get; private set; } = 0;
+
         //Random
         private Random rand = new Random();
 
@@ -26,9 +28,9 @@ namespace SeaBattle
         //Tuples
         private static (int?, int?) aiMemoryCords = (null, null);
 
-        private static (int?, int?) lastShootCords;
+        private static (int?, int?) lastShootCords = (null, null);
 
-        public Player(bool isAi) 
+        public Player(bool isAi, int number) 
         {
             IsAI = isAi;
         }
@@ -53,11 +55,14 @@ namespace SeaBattle
         {
             Score++;
         }
+        public void AddWin()
+        {
+            winsCount++;
+        }
         public void ResetScore()
         { 
             Score = 0; 
         }
-
         #region Human
         private void HumanInput()
         {
@@ -66,10 +71,10 @@ namespace SeaBattle
 
             do
             {
-                Console.WriteLine("Write your Y shoot coordinates");
+                Console.WriteLine("Write your X shoot coordinates");
                 Y = GetInput();
 
-                Console.WriteLine("Write your X shoot coordinates");
+                Console.WriteLine("Write your Y shoot coordinates");
                 X = GetInput();
 
             } while (enemy.Cells.field[(int)X, (int)Y].IsBombed);

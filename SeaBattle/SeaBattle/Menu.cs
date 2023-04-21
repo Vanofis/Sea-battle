@@ -3,6 +3,11 @@ using System.Net.Sockets;
 
 namespace SeaBattle
 {
+    public enum GameType
+    { 
+        Singleplayer,
+        Multiplayer,
+    }
     class Menu
     {
         private int gamemodeNumber = 0;
@@ -44,13 +49,13 @@ namespace SeaBattle
             switch (gamemodeNumber) 
             {
                 case 1:
-                    game.Start(false, true);
+                    game.Start(false, true, GameType.Singleplayer);
                     break;
                 case 2:
-                    //ShowMultiplayerOptions();
+                    ShowMultiplayerOptions();
                     break;
                 case 3:
-                    game.Start(true, true);
+                    game.Start(true, true, GameType.Singleplayer);
                     break;
             }
         }
@@ -79,31 +84,10 @@ namespace SeaBattle
             switch(multiplayerOption)
             {
                 case "Host":
-                    game.Start(false, false);
+                    game.Start(false, false, GameType.Multiplayer);
                     break;
                 case "Join":
-                    ConnectToServer();
                     break;
-            }
-        }
-        private async void ConnectToServer()
-        {
-            using var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
-            Console.WriteLine("Write url adress");
-            string url = "0.0.0.0";
-            Console.WriteLine("Write port");
-            int port = int.Parse(Console.ReadLine());
-
-            try
-            {
-                await socket.ConnectAsync(url, port);
-         
-                Console.WriteLine("Connection established, joining server");
-            }
-            catch (SocketException)
-            {
-            Console.WriteLine("No server found, failed connection");
             }
         }
     }

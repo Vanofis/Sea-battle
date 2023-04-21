@@ -1,10 +1,13 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace SeaBattle
 {
+    
     enum PlayerTurn
     { 
         Player1,
@@ -12,25 +15,30 @@ namespace SeaBattle
     }
     public class SeaBattle
     {
+        ServerObject server;
+
         private Player player1;
         private Player player2;
         private Player currentPlayer;
+
         private PlayerTurn turn = PlayerTurn.Player1;
+
+        private GameType gameType;
 
         private bool isGameStarted = true;
         private bool isFinishedRound = false;
 
         private string winner = " ";
 
-        public void Start(bool player1IsAI, bool player2IsAI)
+        public void Start(bool player1IsAI, bool player2IsAI, GameType type)
         {
-            Init(player1IsAI, player2IsAI);
+            Init(player1IsAI, player2IsAI, type);
 
             GameCycle();
         }
         private void GameCycle()
         {
-            while (isGameStarted)
+            while (isGameStarted || player1.winsCount >= 3 || player2.winsCount >= 3)
             {
                 Update();
             }
@@ -45,17 +53,35 @@ namespace SeaBattle
         }
         private void DoGameStep()
         {
-            Redraw();
+            if (gameType is GameType.Singleplayer) Redraw();
+            else if (gameType is GameType.Multiplayer)
+            {
+                //server.clients[0].clientGame.DrawMyMap();
+                //server.clients[1].clientGame.DrawMyMap();
+            }
 
             WriteScore();
 
             PickPlayer();
 
-            DoPlayerTurn();
+            if(gameType is GameType.Singleplayer) DoPlayerTurn();
+            else if(gameType is GameType.Multiplayer)
+            {
+                //server.clients[(int)turn].clientGame.DoHumanPlayerTurn();
+            }
+
+            TryFinishGame();
 
             ChangeTurn();
 
-            Redraw();
+            if (gameType is GameType.Singleplayer) Redraw();
+            else if (gameType is GameType.Multiplayer)
+            {
+                //server.clients[0].clientGame.DrawMyMap();
+                //server.clients[1].clientGame.DrawMyMap();
+            }
+
+            Thread.Sleep(750);
         }
         private void PickPlayer()
         {
@@ -72,8 +98,6 @@ namespace SeaBattle
         private void DoPlayerTurn()
         {
             currentPlayer.DoTurn();
-
-            TryFinishGame();
         }
         private void ChangeTurn()
         {
@@ -120,15 +144,23 @@ namespace SeaBattle
 
             SetLevel();
         }
-        private void Init(bool p1AI, bool p2AI)
+        private async void Init(bool p1AI, bool p2AI, GameType type)
         {
-            player1 = new Player(p1AI);
-            player2 = new Player(p2AI);
+            gameType = type;
+
+            player1 = new Player(p1AI, 1);
+            player2 = new Player(p2AI, 2);
 
             player1.SetEnemy(player2);
             player2.SetEnemy(player1);
 
             SetLevel();
+
+            if (gameType is GameType.Multiplayer)
+            {
+                server = new ServerObject();
+                await server.ListenAsync();
+            }
         }
         private void SetLevel()
         {
@@ -153,17 +185,6 @@ namespace SeaBattle
                 player1.Cells.DrawField();
                 player1.VisibleCells.DrawField();
             }
-        }
-        private async void CreateServer()
-        {
-            IPEndPoint ipPoint = new IPEndPoint(IPAddress.Any, 1234);
-            using Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            socket.Bind(ipPoint);
-            socket.Listen(1);
-
-            Console.WriteLine($"Your connection adress is: {socket.LocalEndPoint}");
-
-            using Socket client = await socket.AcceptAsync();
         }
     }
 }

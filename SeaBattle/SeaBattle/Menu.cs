@@ -3,18 +3,13 @@ using System.Net.Sockets;
 
 namespace SeaBattle
 {
-    public enum GameType
-    { 
-        Singleplayer,
-        Multiplayer,
-    }
     class Menu
     {
         private int gamemodeNumber = 0;
 
         private string multiplayerOption = " ";
 
-        private SeaBattle game = new SeaBattle();
+        GameHandler gameHandler = new GameHandler(); 
 
         public void LaunchMenu()
         {
@@ -38,9 +33,11 @@ namespace SeaBattle
 
                 isCorrectInput = int.TryParse(Console.ReadLine(), out gamemodeNumber);
 
-                if(gamemodeNumber > 3 || gamemodeNumber < 1) isCorrectInput = false;
+                if(gamemodeNumber > 3 || gamemodeNumber < 1) 
+                    isCorrectInput = false;
 
-                if (!isCorrectInput) Console.WriteLine("Wrong input");
+                if (!isCorrectInput) 
+                    Console.WriteLine("Wrong input");
             }
             while (!isCorrectInput);
         }
@@ -49,44 +46,13 @@ namespace SeaBattle
             switch (gamemodeNumber) 
             {
                 case 1:
-                    game.Start(false, true, GameType.Singleplayer);
+                    gameHandler.LaunchGame(false, true);
                     break;
                 case 2:
-                    ShowMultiplayerOptions();
+                    gameHandler.LaunchGame(false, false);
                     break;
                 case 3:
-                    game.Start(true, true, GameType.Singleplayer);
-                    break;
-            }
-        }
-        private void ShowMultiplayerOptions()
-        {
-            Console.Clear();
-
-            Console.WriteLine("Choose to player mode");
-            Console.WriteLine("Write Host - to create server");
-            Console.WriteLine("Write Join - to join opened game");
-
-            GetMultiplayerOptionsInput();
-        }
-        private void GetMultiplayerOptionsInput()
-        {
-            do
-            {
-                multiplayerOption = " ";
-
-                multiplayerOption = Console.ReadLine();
-
-                if (multiplayerOption is "Host" || multiplayerOption is "Join") break;
-            }
-            while (true);
-
-            switch(multiplayerOption)
-            {
-                case "Host":
-                    game.Start(false, false, GameType.Multiplayer);
-                    break;
-                case "Join":
+                    gameHandler.LaunchGame(true, true);
                     break;
             }
         }

@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Drawing;
 
 namespace SeaBattle
 {
@@ -35,15 +36,8 @@ namespace SeaBattle
 
                 for (int j = 0; j < Tools.fieldSide; j++)
                 {
-                    ConsoleColor color = field[i, j].Character switch
-                    {
-                        Cell.destroyedChar => ConsoleColor.Red,
-                        Cell.destroyedShipChar => ConsoleColor.Blue,
-                        Cell.shipChar => ConsoleColor.DarkYellow,
-                        _ => ConsoleColor.White,
-                    };
 
-                    Console.ForegroundColor = color;
+                    Console.ForegroundColor = GetSymbolColor(field[i, j].Character);
 
                     Console.Write(field[i, j].Character);
                 }
@@ -56,7 +50,7 @@ namespace SeaBattle
         }
         private Cell[,] GenerateField()
         {
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < Tools.shipCount; i++)
             {
                 (int, int) randomPoint = new(rand.Next(0, Tools.fieldSide), rand.Next(0, Tools.fieldSide));
 
@@ -69,6 +63,18 @@ namespace SeaBattle
             }
 
             return field;
+        }
+        private ConsoleColor GetSymbolColor(char character)
+        {
+            ConsoleColor color = character switch
+            {
+                Cell.destroyedChar => ConsoleColor.Red,
+                Cell.destroyedShipChar => ConsoleColor.Blue,
+                Cell.shipChar => ConsoleColor.DarkYellow,
+                _ => ConsoleColor.White,
+            };
+
+            return color;
         }
     }
 }

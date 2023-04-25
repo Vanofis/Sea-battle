@@ -15,7 +15,7 @@ namespace SeaBattle
     }
     public class SeaBattle
     {
-        ServerObject server;
+        private GameHandler gameHandler;
 
         private Player player1;
         private Player player2;
@@ -23,63 +23,43 @@ namespace SeaBattle
 
         private PlayerTurn turn = PlayerTurn.Player1;
 
-        private GameType gameType;
-
-        private bool isGameStarted = true;
         private bool isFinishedRound = false;
 
         private string winner = " ";
 
-        public void Start(bool player1IsAI, bool player2IsAI, GameType type)
+        public void Start(bool player1IsAI, bool player2IsAI, GameHandler handler)
         {
-            Init(player1IsAI, player2IsAI, type);
+            gameHandler = handler;
 
-            GameCycle();
+            Init(player1IsAI, player2IsAI);
+
+            StartGameCycle();
         }
-        private void GameCycle()
-        {
-            while (isGameStarted || player1.winsCount >= 3 || player2.winsCount >= 3)
-            {
-                Update();
-            }
-        }
-        private void Update()
+        private void StartGameCycle()
         {
             while(!isFinishedRound) DoGameStep();
 
             WriteWinner();
 
             ResetLevel();
+
+            Console.ReadKey();
         }
         private void DoGameStep()
         {
-            if (gameType is GameType.Singleplayer) Redraw();
-            else if (gameType is GameType.Multiplayer)
-            {
-                //server.clients[0].clientGame.DrawMyMap();
-                //server.clients[1].clientGame.DrawMyMap();
-            }
+            Redraw();
 
             WriteScore();
 
             PickPlayer();
 
-            if(gameType is GameType.Singleplayer) DoPlayerTurn();
-            else if(gameType is GameType.Multiplayer)
-            {
-                //server.clients[(int)turn].clientGame.DoHumanPlayerTurn();
-            }
+            DoPlayerTurn();
 
             TryFinishGame();
 
             ChangeTurn();
 
-            if (gameType is GameType.Singleplayer) Redraw();
-            else if (gameType is GameType.Multiplayer)
-            {
-                //server.clients[0].clientGame.DrawMyMap();
-                //server.clients[1].clientGame.DrawMyMap();
-            }
+            Redraw();
 
             Thread.Sleep(750);
         }
@@ -117,7 +97,7 @@ namespace SeaBattle
         }
         private void TryFinishGame()
         {
-            if(player1.Score >= 20 || player2.Score >= 20)
+            if(player1.Score >= Tools.shipCount || player2.Score >= Tools.shipCount)
             {
                 EndGame();
             }
@@ -126,7 +106,16 @@ namespace SeaBattle
         {
             isFinishedRound = true;
 
-            winner = player1.Score > player2.Score ? "Player 1 won!" : "Player 2 won!";
+            if(player1.Score > player2.Score)
+            {
+                winner = "Player 1 won!";
+                gameHandler.AddWin(1);
+            }
+            else
+            {
+                winner = "Player 2 won!";
+                gameHandler.AddWin(2);
+            }
         }
         private void WriteWinner()
         {
@@ -144,29 +133,25 @@ namespace SeaBattle
 
             SetLevel();
         }
-        private async void Init(bool p1AI, bool p2AI, GameType type)
+        private void Init(bool p1AI, bool p2AI)
         {
-            gameType = type;
-
             player1 = new Player(p1AI, 1);
             player2 = new Player(p2AI, 2);
+
+            currentPlayer = player1;
 
             player1.SetEnemy(player2);
             player2.SetEnemy(player1);
 
             SetLevel();
-
-            if (gameType is GameType.Multiplayer)
-            {
-                server = new ServerObject();
-                await server.ListenAsync();
-            }
         }
         private void SetLevel()
         {
             player1.Cells.InitMap();
             player2.Cells.InitMap();
+
             player1.VisibleCells.GenerateBlankField();
+            player2.VisibleCells.GenerateBlankField();
 
             player1.ResetScore();
             player2.ResetScore();
@@ -175,7 +160,7 @@ namespace SeaBattle
         {
             Console.Clear();
 
-            if(player1.IsAI && player2.IsAI)
+            if (player1.IsAI && player2.IsAI)
             {
                 player1.Cells.DrawField();
                 player2.Cells.DrawField();
@@ -184,6 +169,11 @@ namespace SeaBattle
             {
                 player1.Cells.DrawField();
                 player1.VisibleCells.DrawField();
+            }
+            else if (!player1.IsAI && !player2.IsAI)
+            {
+                currentPlayer.Cells.DrawField();
+                currentPlayer.VisibleCells.DrawField();
             }
         }
     }

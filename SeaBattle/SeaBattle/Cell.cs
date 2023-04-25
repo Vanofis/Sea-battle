@@ -31,7 +31,10 @@ namespace SeaBattle
                 
                 IsShip = false;
             }
-            else Character = destroyedChar;
+            else
+            {
+                Character = destroyedChar;
+            }
 
             IsBombed = true;
         }

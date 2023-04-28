@@ -8,14 +8,15 @@ using System.Threading.Tasks;
 namespace SeaBattle
 {
     
-    enum PlayerTurn
+    public enum PlayerTurn
     { 
         Player1,
         Player2,
+        Draw,
     }
     public class SeaBattle
     {
-        private GameHandler gameHandler;
+        public PlayerTurn winnerPlayer = PlayerTurn.Draw;
 
         private Player player1;
         private Player player2;
@@ -27,13 +28,16 @@ namespace SeaBattle
 
         private string winner = " ";
 
-        public void Start(bool player1IsAI, bool player2IsAI, GameHandler handler)
+        public void Start(bool player1IsAI, bool player2IsAI)
         {
-            gameHandler = handler;
 
             Init(player1IsAI, player2IsAI);
 
             StartGameCycle();
+        }
+        public PlayerTurn GetResult()
+        {
+            return winnerPlayer;
         }
         private void StartGameCycle()
         {
@@ -109,12 +113,12 @@ namespace SeaBattle
             if(player1.Score > player2.Score)
             {
                 winner = "Player 1 won!";
-                gameHandler.AddWin(1);
+                winnerPlayer = PlayerTurn.Player1;
             }
             else
             {
                 winner = "Player 2 won!";
-                gameHandler.AddWin(2);
+                winnerPlayer = PlayerTurn.Player2;
             }
         }
         private void WriteWinner()

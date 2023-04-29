@@ -46,8 +46,6 @@ namespace SeaBattle
             WriteWinner();
 
             ResetLevel();
-
-            Console.ReadKey();
         }
         private void DoGameStep()
         {

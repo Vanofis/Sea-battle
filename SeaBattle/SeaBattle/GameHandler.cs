@@ -12,19 +12,16 @@ namespace SeaBattle
         private SeaBattle game = new SeaBattle();
 
         private PlayerProfile currentPlayerProfile = null;
-        private PlayerProfile aiProfile = null;
+        private PlayerProfile enemyProfile = null;
 
         private PlayerTurn lastWinner = PlayerTurn.Draw;
 
         public void LaunchGame(bool player1IsAI, bool player2IsAI, PlayerProfile profile)
         {
-            currentPlayerProfile = profile;
+            ManageProfiles(player1IsAI, player2IsAI, profile);
 
-            CheckForAIvsAI(player1IsAI, player2IsAI);
-
-            currentPlayerProfile.AddGame();
-
-            SaveData();
+            SaveData(currentPlayerProfile.Name + ".xml", currentPlayerProfile);
+            SaveData(enemyProfile.Name + ".xml", enemyProfile);
 
             while(!SomeoneHas3Wins())
             {
@@ -34,12 +31,14 @@ namespace SeaBattle
 
                 AddWin();
 
-                SaveData();
+                SaveData(currentPlayerProfile.Name + ".xml", currentPlayerProfile);
+                SaveData(enemyProfile.Name + ".xml", enemyProfile);
             }
 
             WriteChampion();
 
-            SaveData();
+            SaveData(currentPlayerProfile.Name + ".xml", currentPlayerProfile);
+            SaveData(enemyProfile.Name + ".xml", enemyProfile);
         }
         public void AddWin(int playerIndex)
         {
@@ -53,16 +52,21 @@ namespace SeaBattle
                     break;
             }
         }
-        private void SaveData()
+        private void ManageProfiles(bool player1IsAI, bool player2IsAI, PlayerProfile profile)
         {
-            string name = @"\" + currentPlayerProfile.Name + ".xml";
+            if (!player1IsAI)
+                currentPlayerProfile = profile;
+            else
+                currentPlayerProfile = XMLManager.DeserializeXML("Ai1.xml");
 
-            XMLManager.SerializeXML(currentPlayerProfile, name);
+            enemyProfile = XMLManager.DeserializeXML("Ai2.xml");
+
+            enemyProfile.AddGame();
+            currentPlayerProfile.AddGame();
         }
-        private void CheckForAIvsAI(bool player1IsAI, bool player2IsAI)
+        private void SaveData(string profileName, PlayerProfile profile)
         {
-            if(player1IsAI && player2IsAI)
-                currentPlayerProfile = XMLManager.DeserializeXML("Ai.xml");
+            XMLManager.SerializeXML(profile, profileName);
         }
         private void AddWin()
         {
@@ -71,9 +75,11 @@ namespace SeaBattle
                 case PlayerTurn.Player1:
                     player1Wins++;
                     currentPlayerProfile.AddWonRound();
+                    enemyProfile.AddLostRound();
                     break;
                 case PlayerTurn.Player2:
                     currentPlayerProfile.AddLostRound();
+                    enemyProfile.AddWonRound();
                     player2Wins++;
                     break;
                 case PlayerTurn.Draw:
@@ -95,14 +101,17 @@ namespace SeaBattle
                 champion = currentPlayerProfile.Name;
 
                 currentPlayerProfile.AddWonGames();
+                enemyProfile.AddLostGame();
             }
             else if (player2Wins > player1Wins)
             {
-                champion = "Player 2";
+                champion = enemyProfile.Name;
 
                 currentPlayerProfile.AddLostGame();
+                enemyProfile.AddWonGames();
             }
 
+            Console.Clear();
             Console.WriteLine($"{champion} is absolute champion!");
         }
         private bool SomeoneHas3Wins()

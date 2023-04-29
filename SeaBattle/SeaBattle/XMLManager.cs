@@ -15,14 +15,7 @@ namespace SeaBattle
 
             using (StreamWriter writer = new StreamWriter(path))
             {
-                try
-                {
-                    xmlSerializer.Serialize(writer, playerProfile);
-                }
-                finally
-                {
-                    writer.Close();
-                }
+                xmlSerializer.Serialize(writer, playerProfile);
             }
         }
         public static PlayerProfile DeserializeXML(string fileName)
@@ -36,16 +29,7 @@ namespace SeaBattle
 
             using (StreamReader reader = new StreamReader(path))
             {
-                PlayerProfile deserialize = null;
-
-                try
-                {
-                    deserialize = (PlayerProfile)xmlSerializer.Deserialize(reader);
-                }
-                finally
-                {
-                    reader.Close();
-                }
+                var deserialize = (PlayerProfile)xmlSerializer.Deserialize(reader);
 
                 return deserialize;
             }

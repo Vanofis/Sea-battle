@@ -52,14 +52,20 @@ namespace SeaBattle
         }
         private void TryCreateProfiles()
         {
-            foreach (string profileName in profileNames) 
+            List<(string, bool)> profilesBase = new List<(string, bool)>();
+
+            foreach(var name in profileNames)
             {
-                TryCreateProfile(profileName, false);
+                profilesBase.Add((name, false));
             }
 
-            TryCreateProfile("Ai1", true);
-            TryCreateProfile("Ai2", true);
+            profilesBase.Add(("Ai1", true));
+            profilesBase.Add(("Ai2", true));
 
+            foreach (var profileBase in profilesBase) 
+            {
+                TryCreateProfile(profileBase.Item1, profileBase.Item2);
+            }
         }
         private void TryCreateProfile(string name, bool isAi)
         {

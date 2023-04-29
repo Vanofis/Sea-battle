@@ -52,6 +52,9 @@ namespace SeaBattle
         }
         private void TryCreateProfiles()
         {
+            if(!Directory.Exists(XMLManager.pathToProfiles))
+                Directory.CreateDirectory(XMLManager.pathToProfiles);
+
             List<(string, bool)> profilesBase = new List<(string, bool)>();
 
             foreach(var name in profileNames)

@@ -57,6 +57,7 @@ namespace SeaBattle
         { 
             Score = 0; 
         }
+
         #region Human
         private void HumanInput()
         {

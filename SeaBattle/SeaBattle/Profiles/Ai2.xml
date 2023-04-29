@@ -3,8 +3,8 @@
   <Name>Ai2</Name>
   <IsAi>true</IsAi>
   <Wins>0</Wins>
-  <Loses>0</Loses>
-  <Games>0</Games>
-  <LostRounds>0</LostRounds>
-  <WonRounds>0</WonRounds>
+  <Loses>1</Loses>
+  <Games>1</Games>
+  <LostRounds>3</LostRounds>
+  <WonRounds>1</WonRounds>
 </PlayerProfile>

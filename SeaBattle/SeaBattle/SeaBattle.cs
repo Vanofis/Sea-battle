@@ -26,7 +26,6 @@ namespace SeaBattle
 
         public void Start(bool player1IsAI, bool player2IsAI)
         {
-
             Init(player1IsAI, player2IsAI);
 
             StartGameCycle();
@@ -133,6 +132,8 @@ namespace SeaBattle
         }
         private void Init(bool p1AI, bool p2AI)
         {
+            turn = PlayerTurn.Player1;
+
             player1 = new Player(p1AI, 1);
             player2 = new Player(p2AI, 2);
 

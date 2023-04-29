@@ -66,10 +66,6 @@ namespace SeaBattle
                     enemyProfile.AddWonRound();
                     player2Wins++;
                     break;
-                case PlayerTurn.Draw:
-                    player1Wins++;
-                    player2Wins++;
-                    break;
             }
         }
         private void StartRound(bool player1IsAI, bool player2IsAI)

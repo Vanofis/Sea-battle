@@ -16,16 +16,16 @@ namespace SeaBattle
 
         private PlayerTurn lastWinner = PlayerTurn.Draw;
 
-        public void LaunchGame(bool player1IsAI, bool player2IsAI, PlayerProfile profile)
+        public void LaunchGame(PlayerProfile profile1, PlayerProfile profile2)
         {
-            ManageProfiles(player1IsAI, player2IsAI, profile);
+            ManageProfiles(profile1, profile2);
 
             SaveData(currentPlayerProfile.Name + ".xml", currentPlayerProfile);
             SaveData(enemyProfile.Name + ".xml", enemyProfile);
 
             while(!SomeoneHas3Wins())
             {
-                StartRound(player1IsAI, player2IsAI);
+                StartRound(profile1.IsAi, profile2.IsAi);
 
                 lastWinner = game.GetResult();
 
@@ -52,14 +52,10 @@ namespace SeaBattle
                     break;
             }
         }
-        private void ManageProfiles(bool player1IsAI, bool player2IsAI, PlayerProfile profile)
+        private void ManageProfiles(PlayerProfile profile1, PlayerProfile profile2)
         {
-            if (!player1IsAI)
-                currentPlayerProfile = profile;
-            else
-                currentPlayerProfile = XMLManager.DeserializeXML("Ai1.xml");
-
-            enemyProfile = XMLManager.DeserializeXML("Ai2.xml");
+            currentPlayerProfile = profile1;
+            enemyProfile = profile2;
 
             enemyProfile.AddGame();
             currentPlayerProfile.AddGame();

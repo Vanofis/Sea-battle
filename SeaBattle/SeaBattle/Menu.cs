@@ -54,20 +54,23 @@ namespace SeaBattle
         {
             foreach (string profileName in profileNames) 
             {
-                if (!File.Exists(XMLManager.pathToProfiles + @"\" + profileName + ".xml"))
-                    CreateProfileXML(profileName);
+                TryCreateProfile(profileName, false);
             }
 
-            if (!File.Exists(XMLManager.pathToProfiles + @"\" + "Ai1.xml"))
-                CreateProfileXML("Ai1");
-            if (!File.Exists(XMLManager.pathToProfiles + @"\" + "Ai2.xml"))
-                CreateProfileXML("Ai2");
+            TryCreateProfile("Ai1", true);
+            TryCreateProfile("Ai2", true);
+
         }
-        private void CreateProfileXML(string profileName)
+        private void TryCreateProfile(string name, bool isAi)
+        {
+            if (!File.Exists(XMLManager.pathToProfiles + @"\" + name + ".xml"))
+                CreateProfileXML(name, isAi);
+        }
+        private void CreateProfileXML(string profileName, bool isAi)
         {
             if(!File.Exists(XMLManager.pathToProfiles + @"\" + profileName + ".xml"))
             {
-                PlayerProfile profile = new PlayerProfile(profileName);
+                PlayerProfile profile = new PlayerProfile(profileName, isAi);
 
                 XMLManager.SerializeXML(profile, profileName + ".xml");
             }
@@ -117,14 +120,19 @@ namespace SeaBattle
             switch (gamemodeNumber) 
             {
                 case 1:
-                    gameHandler.LaunchGame(false, true, currentProfile);
+                    PlayerProfile aiProfile = XMLManager.DeserializeXML("Ai2.xml");
+
+                    gameHandler.LaunchGame(currentProfile, aiProfile);
                     break;
                 case 2:
                     //gameHandler.LaunchGame(false, false, currentProfile);
                     Console.WriteLine("There is no multiplayer puk-puk :(");
                     break;
                 case 3:
-                    gameHandler.LaunchGame(true, true, currentProfile);
+                    PlayerProfile aiProfile1 = XMLManager.DeserializeXML("Ai1.xml");
+                    PlayerProfile aiProfile2 = XMLManager.DeserializeXML("Ai2.xml");
+
+                    gameHandler.LaunchGame(aiProfile1, aiProfile2);
                     break;
             }
         }

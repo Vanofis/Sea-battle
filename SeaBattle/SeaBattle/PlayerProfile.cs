@@ -7,6 +7,8 @@ namespace SeaBattle
     {
         public string Name = "BasePlayer";
 
+        public bool IsAi = false;
+
         //Games
         public int Wins = 0;
         public int Loses = 0;
@@ -17,9 +19,10 @@ namespace SeaBattle
         public int WonRounds = 0;
 
         public PlayerProfile() { }
-        public PlayerProfile(string name) 
+        public PlayerProfile(string name, bool isAI) 
         { 
             Name = name;
+            IsAi = isAI;
         }
 
         #region Control Methods

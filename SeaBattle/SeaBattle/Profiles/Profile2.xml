@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PlayerProfile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Profile2</Name>
+  <IsAi>false</IsAi>
+  <Wins>0</Wins>
+  <Loses>0</Loses>
+  <Games>0</Games>
+  <LostRounds>0</LostRounds>
+  <WonRounds>0</WonRounds>
+</PlayerProfile>

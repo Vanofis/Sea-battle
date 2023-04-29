@@ -40,18 +40,6 @@ namespace SeaBattle
             SaveData(currentPlayerProfile.Name + ".xml", currentPlayerProfile);
             SaveData(enemyProfile.Name + ".xml", enemyProfile);
         }
-        public void AddWin(int playerIndex)
-        {
-            switch (playerIndex) 
-            {
-                case 1:
-                    player1Wins++;
-                    break;
-                case 2:
-                    player2Wins++;
-                    break;
-            }
-        }
         private void ManageProfiles(PlayerProfile profile1, PlayerProfile profile2)
         {
             currentPlayerProfile = profile1;

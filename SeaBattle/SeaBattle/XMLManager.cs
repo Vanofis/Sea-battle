@@ -1,11 +1,12 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Xml.Serialization;
 
 namespace SeaBattle
 {
     public static class XMLManager
     {
-        public static string pathToProfiles { get; private set; } = Directory.GetCurrentDirectory() + $@"\Profiles";
+        public static string pathToProfiles { get; private set; } = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName + $@"\Profiles";
 
         public static void SerializeXML(PlayerProfile playerProfile, string fileName)
         {

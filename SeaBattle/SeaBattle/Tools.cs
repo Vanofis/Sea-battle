@@ -3,8 +3,8 @@ namespace SeaBattle
 {
     public static class Tools
     {
-        public const int fieldSide = 1;
-        public const int shipCount = 1;
+        public const int fieldSide = 10;
+        public const int shipCount = 20;
 
         public static bool IsValidCordinate(int cord)
         {
